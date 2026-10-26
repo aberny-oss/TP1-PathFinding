@@ -213,7 +213,7 @@ int main()
 			bool playerIsAtUpCursor = false;
 			if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
 			{
-				for (int i = 0; i < distanceLinePlayerToCursor; i++)
+				for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
 				{
 					int tempLine = PosPlayerLine + 1 + i;
 					grid[tempLine][PosPlayerColumn] = PATH;
@@ -223,7 +223,7 @@ int main()
 			}
 			else //Player dessous le curseur en Line
 			{
-				for (int i = 0; i < distanceLinePlayerToCursor; i++)
+				for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
 				{
 					int tempLine = PosPlayerLine - 1 - i;
 					grid[tempLine][PosPlayerColumn] = PATH;
@@ -234,9 +234,9 @@ int main()
 			distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
 			if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
 			{
-				for (int i = 0; i < distanceColumnPlayerToCursor - 1; i++)
+				for (int i = 0; i < distanceColumnPlayerToCursor; i++)
 				{
-					int tempColumn = PosPlayerColumn + 1 + i;
+					int tempColumn = PosPlayerColumn + i;
 					int tempLine;
 					if (playerIsAtUpCursor)
 					{
@@ -252,9 +252,9 @@ int main()
 			}
 			else //Player a droite du curseur en column
 			{
-				for (int i = 0; i < distanceColumnPlayerToCursor - 1; i++)
+				for (int i = 0; i < distanceColumnPlayerToCursor; i++)
 				{
-					int tempColumn = PosPlayerColumn - 1 - i;
+					int tempColumn = PosPlayerColumn - i;
 					int tempLine;
 					if (playerIsAtUpCursor)
 					{
@@ -285,6 +285,8 @@ int main()
 			std::cerr << userInputChar << std::endl;
 			std::cerr << userInputInt << std::endl;
 		}
+		int deplacement = distanceLinePlayerToCursor + distanceColumnPlayerToCursor;
+		std::cerr << "Deplacement a effectuer : " << deplacement << std::endl;
 		for (int i = 0; i < grid.size(); i++)
 		{
 			for (int j = 0; j < grid[i].size(); j++)
