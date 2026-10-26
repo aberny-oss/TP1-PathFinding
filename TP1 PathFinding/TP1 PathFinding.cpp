@@ -24,10 +24,19 @@ int main()
 	int line = 10;
 	int column = 10;
 
-	//ELEMENT def
+	//ELEMENT update
 #define VOID	0
 #define CURSOR	1
 #define PLAYER	2
+#define PATH	3
+
+	//ELEMENT draw
+#define VOID_DRAW " "
+#define CURSOR_DRAW "0"
+#define PLAYER_DRAW "$"
+#define PATH_DRAW "p"
+
+
 
 	//CURSOR
 	int linePosStartCursor = line - 1;
@@ -48,6 +57,10 @@ int main()
 
 	int newPosPlayerLine = 0;
 	int newPosPlayerColumn = 0;
+
+	//PATH
+	int distanceLinePlayerToCursor;
+	int distanceColumnPlayerToCursor;
 
 	//USER INPUT
 	char userInputChar = 0;
@@ -74,20 +87,22 @@ int main()
 	{
 		for (int j = 0; j < grid[i].size(); j++)
 		{
-			if (grid[i][j] == VOID)
-			{
-				std::cerr << "[ ]" << WHITE;
-			}
-			else if (grid[i][j] == CURSOR)
+			if (grid[i][j] == VOID)//rien
 			{
 				std::cerr << WHITE << "[";
-				std::cerr << RED "0";
+				std::cerr << WHITE VOID_DRAW;
 				std::cerr << WHITE << "]";
 			}
-			else if (grid[i][j] == PLAYER)
+			else if (grid[i][j] == CURSOR) //curseur
 			{
 				std::cerr << WHITE << "[";
-				std::cerr << BLUE "$";
+				std::cerr << RED CURSOR_DRAW;
+				std::cerr << WHITE << "]";
+			}
+			else if (grid[i][j] == PLAYER) //player
+			{
+				std::cerr << WHITE << "[";
+				std::cerr << BLUE PLAYER_DRAW;
 				std::cerr << WHITE << "]";
 			}
 		}
@@ -178,6 +193,89 @@ int main()
 		{
 			grid[PosPlayerLine][PosPlayerColumn] = PLAYER;
 		}
+		//UPDATE PATH
+		if ((PosPlayerLine != PosCursorLine) || (PosPlayerColumn != PosCursorColumn))
+		{
+			//reset
+			for (int i = 0; i < grid.size(); i++)
+			{
+				for (int j = 0; j < grid[i].size(); j++)
+				{
+					if (grid[i][j] == PATH) //path
+					{
+						grid[i][j] = VOID;
+					}
+				}
+			}
+
+			//Calcul Line
+			distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
+			bool playerIsAtUpCursor = false;
+			if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
+			{
+				for (int i = 0; i < distanceLinePlayerToCursor; i++)
+				{
+					int tempLine = PosPlayerLine + 1 + i;
+					grid[tempLine][PosPlayerColumn] = PATH;
+				}
+				playerIsAtUpCursor = true;
+
+			}
+			else //Player dessous le curseur en Line
+			{
+				for (int i = 0; i < distanceLinePlayerToCursor; i++)
+				{
+					int tempLine = PosPlayerLine - 1 - i;
+					grid[tempLine][PosPlayerColumn] = PATH;
+				}
+				playerIsAtUpCursor = false;
+			}
+			//Calcul Column
+			distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
+			if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
+			{
+				for (int i = 0; i < distanceColumnPlayerToCursor - 1; i++)
+				{
+					int tempColumn = PosPlayerColumn + 1 + i;
+					int tempLine;
+					if (playerIsAtUpCursor)
+					{
+						tempLine = PosPlayerLine + distanceLinePlayerToCursor;
+					}
+					else
+					{
+						tempLine = PosPlayerLine - distanceLinePlayerToCursor;
+					}
+					grid[tempLine][tempColumn] = PATH;
+				}
+
+			}
+			else //Player a droite du curseur en column
+			{
+				for (int i = 0; i < distanceColumnPlayerToCursor - 1; i++)
+				{
+					int tempColumn = PosPlayerColumn - 1 - i;
+					int tempLine;
+					if (playerIsAtUpCursor)
+					{
+						tempLine = PosPlayerLine + distanceLinePlayerToCursor;
+					}
+					else
+					{
+						tempLine = PosPlayerLine - distanceLinePlayerToCursor;
+					}
+					grid[tempLine][tempColumn] = PATH;
+				}
+			}
+
+
+
+
+
+
+		}
+
+
 
 		//DRAW
 		std::system("cls");
@@ -193,18 +291,26 @@ int main()
 			{
 				if (grid[i][j] == VOID) //rien
 				{
-					std::cerr << "[ ]" << WHITE;
+					std::cerr << WHITE << "[";
+					std::cerr << WHITE VOID_DRAW;
+					std::cerr << WHITE << "]";
 				}
 				else if (grid[i][j] == CURSOR) //curseur
 				{
 					std::cerr << WHITE << "[";
-					std::cerr << RED "0";
+					std::cerr << RED CURSOR_DRAW;
 					std::cerr << WHITE << "]";
 				}
-				else if (grid[i][j] == PLAYER)
+				else if (grid[i][j] == PLAYER) //player
 				{
 					std::cerr << WHITE << "[";
-					std::cerr << BLUE "$";
+					std::cerr << BLUE PLAYER_DRAW;
+					std::cerr << WHITE << "]";
+				}
+				else if (grid[i][j] == PATH) //path
+				{
+					std::cerr << WHITE << "[";
+					std::cerr << GREEN PATH_DRAW;
 					std::cerr << WHITE << "]";
 				}
 			}
