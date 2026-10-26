@@ -17,6 +17,10 @@ public:
 	void Run();
 	void Shutdown();
 
+	void HandleInput();
+	void Update();
+	void Draw();
+
 private:
 
 	bool m_running = true;

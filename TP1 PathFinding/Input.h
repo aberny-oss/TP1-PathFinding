@@ -14,6 +14,8 @@ public:
 	char GetInputChar();
 	int GetInputInt();
 
+	void SetInputChar(char p_inputChar);
+
 private:
 
 	char m_inputChar;

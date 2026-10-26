@@ -32,3 +32,8 @@ int Input::GetInputInt()
 {
 	return m_inputInt;
 }
+
+void Input::SetInputChar(char p_inputChar)
+{
+	m_inputChar = p_inputChar;
+}
