@@ -21,6 +21,12 @@ public:
 	void Update();
 	void Draw();
 
+	void gotoxy(short x, short y);
+
+	void hidecursor();
+
+	void Refresh();
+
 private:
 
 	bool m_running = true;

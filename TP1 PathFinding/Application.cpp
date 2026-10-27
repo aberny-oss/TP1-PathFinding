@@ -17,6 +17,8 @@ Application* Application::GetInstance()
 
 void Application::Init()
 {
+	hidecursor();
+
 	m_grid = new Grid2D();
 	m_grid->Init(GRID_LINE, GRID_COLUMN);
 
@@ -53,6 +55,8 @@ void Application::Run()
 		Update();
 
 		Draw();
+
+		Refresh();
 	}
 }
 
@@ -241,4 +245,25 @@ void Application::Draw()
 		std::cerr << "\n";
 	}
 	Input::GetInstance()->SetInputChar(-128);
+}
+
+void Application::gotoxy(short x, short y)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD position = { x, y };
+	SetConsoleCursorPosition(hConsole, position);
+}
+
+void Application::hidecursor()
+{
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 100;
+	info.bVisible = FALSE;
+	SetConsoleCursorInfo(consoleHandle, &info);
+}
+
+void Application::Refresh()
+{
+	gotoxy(0, 0);
 }
