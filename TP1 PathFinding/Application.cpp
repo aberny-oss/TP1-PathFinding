@@ -120,37 +120,82 @@ void Application::Update()
 		m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
 	}
 
+	//UPDATE PATH
 	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
 	{
 		//Calcul Line
 		int PosPlayerLine = m_player->GetPosLine();
 		int PosPlayerColumn = m_player->GetPosColumn();
+
 		int PosCursorLine = m_cursor->GetPosLine();
 		int PosCursorColumn = m_cursor->GetPosColumn();
 
 		int distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
+		int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
+
 		bool playerIsAtUpCursor = false;
+		bool playerIsAtLeftCursor = false;
+
+		while (true)
+		{
+			int PosPlayerLine = m_player->GetPosLine();
+			int PosPlayerColumn = m_player->GetPosColumn();
+
+			int distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
+			int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
+
+			//Etape 1 ou se trouve le player par rapport au cursor
+			if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
+			{
+				playerIsAtUpCursor = true;
+			}
+			else //Player dessous le curseur en Line
+			{
+				playerIsAtUpCursor = false;
+			}
+			if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
+			{
+				playerIsAtLeftCursor = true;
+			}
+			else //Player a droite du curseur en column
+			{
+				playerIsAtLeftCursor = false;
+			}
+			//étape 2 vérifier la disponibilité des case autour
+
+			if (playerIsAtUpCursor)
+			{
+				if (m_grid->GetCell(PosPlayerLine + 1, PosPlayerColumn) == VOID)
+				{
+
+				}
+			}
+
+
+
+
+
+
+		}
 		if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
 		{
-			for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-			{
-				int tempLine = PosPlayerLine + 1 + i;
-				m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-			}
+			//for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
+			//{
+			//	int tempLine = PosPlayerLine + 1 + i;
+			//	m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
+			//}
 			playerIsAtUpCursor = true;
-
 		}
 		else //Player dessous le curseur en Line
 		{
-			for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-			{
-				int tempLine = PosPlayerLine - 1 - i;
-				m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-			}
+			//for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
+			//{
+			//	int tempLine = PosPlayerLine - 1 - i;
+			//	m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
+			//}
 			playerIsAtUpCursor = false;
 		}
 		//Calcul Column
-		int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
 		if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
 		{
 			for (int i = 0; i < distanceColumnPlayerToCursor; i++)
