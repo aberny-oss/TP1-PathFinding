@@ -163,33 +163,11 @@ void Application::Update()
 
 	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
 	{
-		//ResetPath();
+		ResetPath();
 
 		FindPath(m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()), m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn()));
 
-		//int diffRow = m_cursor->GetPosLine() - m_player->GetPosLine();
-		//int lenghtRow = std::abs(diffRow);
-		//if (lenghtRow != 0)
-		//{
-		//	int dirRow = diffRow / lenghtRow;
-		//	for (int row = 0; row < lenghtRow; row++)
-		//	{
-		//		isInPath[m_player->GetPosLine() + dirRow * row][m_player->GetPosColumn()] = true;
-		//		m_grid->GetCell(m_player->GetPosLine() + dirRow * row, m_player->GetPosColumn())->s_elementIn = (int)Element::PATH;
-		//	}
-		//}
-
-		//int diffCol = m_cursor->GetPosColumn() - m_player->GetPosColumn();
-		//int lenghtCol = std::abs(diffCol);
-		//if (lenghtCol != 0)
-		//{
-		//	int dirCol = diffCol / lenghtCol;
-		//	for (int col = 0; col < lenghtCol; col++)
-		//	{
-		//		isInPath[m_player->GetPosLine() + diffRow][m_player->GetPosColumn() + dirCol * col] = true;
-		//		m_grid->GetCell(m_player->GetPosLine() + diffRow, m_player->GetPosColumn() + dirCol * col)->s_elementIn = (int)Element::PATH;
-		//	}
-		//}
+	
 	}
 
 	for (Entity* kayou : m_kayoux)
@@ -202,74 +180,6 @@ void Application::Update()
 			m_grid->GetCell(posLineKaoyu, posColumnKaoyu)->s_elementIn = (int)Element::KAYOU;
 		}
 	}
-
-	//if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
-	//{
-	//	//Calcul Line
-	//	int PosPlayerLine = m_player->GetPosLine();
-	//	int PosPlayerColumn = m_player->GetPosColumn();
-	//	int PosCursorLine = m_cursor->GetPosLine();
-	//	int PosCursorColumn = m_cursor->GetPosColumn();
-
-	//	int distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
-	//	bool playerIsAtUpCursor = false;
-	//	if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
-	//	{
-	//		for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-	//		{
-	//			int tempLine = PosPlayerLine + 1 + i;
-	//			m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-	//		}
-	//		playerIsAtUpCursor = true;
-
-	//	}
-	//	else //Player dessous le curseur en Line
-	//	{
-	//		for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-	//		{
-	//			int tempLine = PosPlayerLine - 1 - i;
-	//			m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-	//		}
-	//		playerIsAtUpCursor = false;
-	//	}
-	//	//Calcul Column
-	//	int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
-	//	if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
-	//	{
-	//		for (int i = 0; i < distanceColumnPlayerToCursor; i++)
-	//		{
-	//			int tempColumn = PosPlayerColumn + i;
-	//			int tempLine;
-	//			if (playerIsAtUpCursor)
-	//			{
-	//				tempLine = PosPlayerLine + distanceLinePlayerToCursor;
-	//			}
-	//			else
-	//			{
-	//				tempLine = PosPlayerLine - distanceLinePlayerToCursor;
-	//			}
-	//			m_grid->SetCell(tempLine, tempColumn, PATH);
-	//		}
-	//	}
-	//	else //Player a droite du curseur en column
-	//	{
-	//		for (int i = 0; i < distanceColumnPlayerToCursor; i++)
-	//		{
-	//			int tempColumn = PosPlayerColumn - i;
-	//			int tempLine;
-	//			if (playerIsAtUpCursor)
-	//			{
-	//				tempLine = PosPlayerLine + distanceLinePlayerToCursor;
-	//			}
-	//			else
-	//			{
-	//				tempLine = PosPlayerLine - distanceLinePlayerToCursor;
-	//			}
-	//			m_grid->SetCell(tempLine, tempColumn, PATH);
-	//		}
-	//	}
-	//}
-
 
 }
 
@@ -310,7 +220,7 @@ void Application::Draw()
 			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::PATH) //path
 			{
 				std::cerr << WHITE << "[";
-				std::cerr << GREEN PATH_DRAW;
+				std::cerr << GREEN_BG PATH_DRAW;
 				std::cerr << WHITE << "]";
 			}
 			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::KAYOU) //kayou
@@ -348,16 +258,6 @@ void Application::Refresh()
 
 bool Application::FindPath(Cell* p_start, Cell* p_end)
 {
-	//
-	for (int line = 0; line < m_grid->GetLine(); line++)
-	{
-		for (int column = 0; column < m_grid->GetColumn(); column++)
-		{
-			Cell* cell = m_grid->GetCell(line, column);
-			cell->s_added = false;
-		}
-	}
-
 	// Créer une file
 	std::queue<Cell*> cellQueue;
 
@@ -381,7 +281,10 @@ bool Application::FindPath(Cell* p_start, Cell* p_end)
 			while (cell != nullptr)
 			{
 				//isInPath[cell->s_line][cell->s_column] = true;
-				cell->s_elementIn = (int)Element::PATH;
+				if (cell->s_elementIn == (int)Element::FREE)
+				{
+					cell->s_elementIn = (int)Element::PATH;
+				}
 				cell = cell->s_cameFrom;
 			}
 
@@ -417,11 +320,13 @@ bool Application::FindPath(Cell* p_start, Cell* p_end)
 
 void Application::ResetPath()
 {
-	for (int row = 0; row < ROWS; row++)
+	for (int line = 0; line < m_grid->GetLine(); line++)
 	{
-		for (int col = 0; col < COLS; col++)
+		for (int column = 0; column < m_grid->GetColumn(); column++)
 		{
-			isInPath[row][col] = false;
+			Cell* cell = m_grid->GetCell(line, column);
+			cell->s_added = false;
+			cell->s_cameFrom = nullptr;
 		}
 	}
 }

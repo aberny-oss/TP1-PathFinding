@@ -11,11 +11,15 @@
 #include <cassert>
 
 //COLOR
-#define WHITE	"\033[0m"
-#define RED		"\033[31m"
-#define GREEN	"\033[32m"
-#define BLUE	"\033[34m"
-#define YELLOW	"\033[33m"
+#define WHITE		"\033[0m"
+#define RED			"\033[31m"
+#define GREEN		"\033[32m"
+#define BLUE		"\033[34m"
+#define YELLOW		"\033[33m"
+#define RED_BG     "\033[41m"
+#define GREEN_BG	"\033[42m"
+#define BLUE_BG    "\033[44m"
+#define YELLOW_BG  "\033[43m"
 
 //ELEMENT update
 //#define VOID	0
@@ -28,7 +32,7 @@
 #define VOID_DRAW	" "
 #define CURSOR_DRAW "0"
 #define PLAYER_DRAW "$"
-#define PATH_DRAW	"p"
+#define PATH_DRAW	" "
 #define KAYOU_DRAW	"#"
 
 //GRID

@@ -10,11 +10,7 @@ int main()
 	return 0;
 }
 
-#define BG_RED "\033[41m"
-#define BG_GREEN "\033[42m"
-#define DEFAULT "\033[0m"
-
-#define ENTER 13
+//#define ENTER 13
 
 //constexpr int ROWS = 10;
 //constexpr int COLS = 10;
@@ -106,39 +102,39 @@ public:
 
 	void Display()
 	{
-		//Display
-		for (int row = 0; row < ROWS; row++)
-		{
-			for (int col = 0; col < COLS; col++)
-			{
-				std::cout << "[";
+		////Display
+		//for (int row = 0; row < ROWS; row++)
+		//{
+		//	for (int col = 0; col < COLS; col++)
+		//	{
+		//		std::cout << "[";
 
-				if (cursorRow == row && cursorCol == col)
-				{
-					std::cout << BG_GREEN;
-				}
-				else if (isInPath[row][col])
-				{
-					std::cout << BG_RED;
-				}
+		//		if (cursorRow == row && cursorCol == col)
+		//		{
+		//			std::cout << BG_GREEN;
+		//		}
+		//		else if (isInPath[row][col])
+		//		{
+		//			std::cout << BG_RED;
+		//		}
 
-				if (playerRow == row && playerCol == col)
-				{
-					std::cout << "O";
-				}
+		//		if (playerRow == row && playerCol == col)
+		//		{
+		//			std::cout << "O";
+		//		}
 
-				else
-				{
-					std::cout << " ";
-				}
+		//		else
+		//		{
+		//			std::cout << " ";
+		//		}
 
-				std::cout << DEFAULT;
+		//		std::cout << DEFAULT;
 
-				std::cout << "]";
-			}
+		//		std::cout << "]";
+		//	}
 
-			std::cout << std::endl;
-		}
+		//	std::cout << std::endl;
+		//}
 	}
 
 	void Input()
