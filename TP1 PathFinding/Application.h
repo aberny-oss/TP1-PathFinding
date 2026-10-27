@@ -2,12 +2,13 @@
 
 class Grid2D;
 class Entity;
+struct Cell;
 
 class Application
 {
 public:
 
-	Application() = default;
+	Application();
 
 	~Application();
 
@@ -27,10 +28,12 @@ public:
 
 	void Refresh();
 
+	bool FindPath(Cell* p_start, Cell* p_end);
+
 private:
 
-	bool m_running = true;
-	bool m_drawInput = true;
+	bool m_running;
+	bool m_drawInput;
 
 	//GRID
 	Grid2D* m_grid;	

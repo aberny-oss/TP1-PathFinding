@@ -18,11 +18,11 @@
 #define YELLOW	"\033[33m"
 
 //ELEMENT update
-#define VOID	0
-#define CURSOR	1
-#define PLAYER	2
-#define PATH	3
-#define KAYOU	4
+//#define VOID	0
+//#define CURSOR	1
+//#define PLAYER	2
+//#define PATH	3
+//#define KAYOU	4
 
 //ELEMENT draw
 #define VOID_DRAW	" "

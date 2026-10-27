@@ -1,8 +1,23 @@
 #include "pch.h"
+#include <queue>
+
 #include "Application.h"
 #include "Grid2D.h"
 #include "Entity.h"
 #include "Input.h"
+
+Application::Application()
+{
+	m_running = true;
+	m_drawInput = true;
+
+	//GRID
+	m_grid = nullptr;
+
+	//ENTITY
+	m_cursor = nullptr;
+	m_player = nullptr;
+}
 
 Application::~Application()
 {
@@ -30,8 +45,10 @@ void Application::Init()
 	m_player->Init(GRID_LINE, GRID_COLUMN);
 	m_player->SetPosition(0, 0);
 
-	m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);
-	m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
+	//m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);
+	//m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
+	m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn())->s_elementIn = (int)Element::CURSOR;
+	m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
 
 	int spawnKayouLine = 0;
 	int spawnKayouColumn = 0;
@@ -39,8 +56,10 @@ void Application::Init()
 	{
 		spawnKayouLine = rand() % GRID_LINE;
 		spawnKayouColumn = rand() % GRID_COLUMN;
-		if (m_grid->GetCell(spawnKayouLine, spawnKayouColumn) == VOID)
-			m_grid->SetCell(spawnKayouLine, spawnKayouColumn, KAYOU);
+		//if (m_grid->GetCell(spawnKayouLine, spawnKayouColumn) == VOID)
+		//	m_grid->SetCell(spawnKayouLine, spawnKayouColumn, KAYOU);
+		if (m_grid->GetCell(spawnKayouLine, spawnKayouColumn)->s_elementIn == (int)Element::FREE)
+			m_grid->GetCell(spawnKayouLine, spawnKayouColumn)->s_elementIn = (int)Element::KAYOU;
 	}
 }
 
@@ -110,86 +129,95 @@ void Application::Update()
 	{
 		for (int j = 0; j < m_grid->GetColumn(); j++)
 		{
-			m_grid->SetCell(i, j, VOID);
+			//m_grid->SetCell(i, j, VOID);
+			//m_grid->SetCell(i, j, VOID);
+			m_grid->GetCell(i, j)->s_elementIn = (int)Element::FREE;
 		}
 	}
 
 	//UPDATE CURSOR
-	m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);
+	//m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);
+	m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn())->s_elementIn = (int)Element::CURSOR;
 
 	//UPDATE PLAYER
 	//pose lu player si pas cursor
-	if (m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()) != CURSOR)
+	//if (m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()) != CURSOR)
+	//{
+	//	m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
+	//}
+	if (m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn != (int)Element::CURSOR)
 	{
-		m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
+		m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
 	}
 
-	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
-	{
-		//Calcul Line
-		int PosPlayerLine = m_player->GetPosLine();
-		int PosPlayerColumn = m_player->GetPosColumn();
-		int PosCursorLine = m_cursor->GetPosLine();
-		int PosCursorColumn = m_cursor->GetPosColumn();
+	//if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
+	//{
+	//	//Calcul Line
+	//	int PosPlayerLine = m_player->GetPosLine();
+	//	int PosPlayerColumn = m_player->GetPosColumn();
+	//	int PosCursorLine = m_cursor->GetPosLine();
+	//	int PosCursorColumn = m_cursor->GetPosColumn();
 
-		int distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
-		bool playerIsAtUpCursor = false;
-		if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
-		{
-			for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-			{
-				int tempLine = PosPlayerLine + 1 + i;
-				m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-			}
-			playerIsAtUpCursor = true;
+	//	int distanceLinePlayerToCursor = std::abs(PosPlayerLine - PosCursorLine);
+	//	bool playerIsAtUpCursor = false;
+	//	if (PosPlayerLine < PosCursorLine) //Player dessus le curseur en Line
+	//	{
+	//		for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
+	//		{
+	//			int tempLine = PosPlayerLine + 1 + i;
+	//			m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
+	//		}
+	//		playerIsAtUpCursor = true;
 
-		}
-		else //Player dessous le curseur en Line
-		{
-			for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
-			{
-				int tempLine = PosPlayerLine - 1 - i;
-				m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
-			}
-			playerIsAtUpCursor = false;
-		}
-		//Calcul Column
-		int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
-		if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
-		{
-			for (int i = 0; i < distanceColumnPlayerToCursor; i++)
-			{
-				int tempColumn = PosPlayerColumn + i;
-				int tempLine;
-				if (playerIsAtUpCursor)
-				{
-					tempLine = PosPlayerLine + distanceLinePlayerToCursor;
-				}
-				else
-				{
-					tempLine = PosPlayerLine - distanceLinePlayerToCursor;
-				}
-				m_grid->SetCell(tempLine, tempColumn, PATH);
-			}
-		}
-		else //Player a droite du curseur en column
-		{
-			for (int i = 0; i < distanceColumnPlayerToCursor; i++)
-			{
-				int tempColumn = PosPlayerColumn - i;
-				int tempLine;
-				if (playerIsAtUpCursor)
-				{
-					tempLine = PosPlayerLine + distanceLinePlayerToCursor;
-				}
-				else
-				{
-					tempLine = PosPlayerLine - distanceLinePlayerToCursor;
-				}
-				m_grid->SetCell(tempLine, tempColumn, PATH);
-			}
-		}
-	}
+	//	}
+	//	else //Player dessous le curseur en Line
+	//	{
+	//		for (int i = 0; i < distanceLinePlayerToCursor - 1; i++)
+	//		{
+	//			int tempLine = PosPlayerLine - 1 - i;
+	//			m_grid->SetCell(tempLine, PosPlayerColumn, PATH);
+	//		}
+	//		playerIsAtUpCursor = false;
+	//	}
+	//	//Calcul Column
+	//	int distanceColumnPlayerToCursor = std::abs(PosPlayerColumn - PosCursorColumn);
+	//	if (PosPlayerColumn < PosCursorColumn) //Player a gauche du curseur en column
+	//	{
+	//		for (int i = 0; i < distanceColumnPlayerToCursor; i++)
+	//		{
+	//			int tempColumn = PosPlayerColumn + i;
+	//			int tempLine;
+	//			if (playerIsAtUpCursor)
+	//			{
+	//				tempLine = PosPlayerLine + distanceLinePlayerToCursor;
+	//			}
+	//			else
+	//			{
+	//				tempLine = PosPlayerLine - distanceLinePlayerToCursor;
+	//			}
+	//			m_grid->SetCell(tempLine, tempColumn, PATH);
+	//		}
+	//	}
+	//	else //Player a droite du curseur en column
+	//	{
+	//		for (int i = 0; i < distanceColumnPlayerToCursor; i++)
+	//		{
+	//			int tempColumn = PosPlayerColumn - i;
+	//			int tempLine;
+	//			if (playerIsAtUpCursor)
+	//			{
+	//				tempLine = PosPlayerLine + distanceLinePlayerToCursor;
+	//			}
+	//			else
+	//			{
+	//				tempLine = PosPlayerLine - distanceLinePlayerToCursor;
+	//			}
+	//			m_grid->SetCell(tempLine, tempColumn, PATH);
+	//		}
+	//	}
+	//}
+
+
 }
 
 void Application::Draw()
@@ -208,31 +236,31 @@ void Application::Draw()
 	{
 		for (int j = 0; j < m_grid->GetColumn(); j++)
 		{
-			if (m_grid->GetCell(i, j) == VOID) //rien
+			if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::FREE) //rien
 			{
 				std::cerr << WHITE << "[";
 				std::cerr << WHITE VOID_DRAW;
 				std::cerr << WHITE << "]";
 			}
-			else if (m_grid->GetCell(i, j) == CURSOR) //curseur
+			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::CURSOR) //curseur
 			{
 				std::cerr << WHITE << "[";
 				std::cerr << RED CURSOR_DRAW;
 				std::cerr << WHITE << "]";
 			}
-			else if (m_grid->GetCell(i, j) == PLAYER) //player
+			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::PLAYER) //player
 			{
 				std::cerr << WHITE << "[";
 				std::cerr << BLUE PLAYER_DRAW;
 				std::cerr << WHITE << "]";
 			}
-			else if (m_grid->GetCell(i, j) == PATH) //path
+			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::PATH) //path
 			{
 				std::cerr << WHITE << "[";
 				std::cerr << GREEN PATH_DRAW;
 				std::cerr << WHITE << "]";
 			}
-			else if (m_grid->GetCell(i, j) == KAYOU) //kayou
+			else if (m_grid->GetCell(i, j)->s_elementIn == (int)Element::KAYOU) //kayou
 			{
 				std::cerr << WHITE << "[";
 				std::cerr << YELLOW KAYOU_DRAW;
@@ -264,3 +292,47 @@ void Application::Refresh()
 {
 	gotoxy(0, 0);
 }
+
+bool Application::FindPath(Cell* p_start, Cell* p_end)
+{
+	// Créer une file
+	std::queue<Cell*> cellQueue;
+
+	// Ajouter "start" à la file
+	cellQueue.push(p_start);
+
+	// Marquer la tile comme "ajouté"
+	p_start->s_added = true;
+
+	/* la file n'est pas vide */
+	while (cellQueue.empty() == false)
+	{
+		// Récupérer la tile en tête de file et la retirer de la file
+		cellQueue.pop();
+
+		/* la tile a les coordonnées de end */
+		if (p_end == cellQueue.front())
+			return true; // chemin trouvé
+
+		const int directions[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, };
+
+		/* chaque voisin de la tile courante */
+		for (int i = 0; i < 4; i++) 
+		{
+			int dirLine = directions[i][0];
+			int dirColumn = directions[i][1];
+
+			/* voisin sans obstacle et non "ajouté" */
+			if (m_grid->GetCell(dirLine, dirColumn)->s_elementIn == (int)Element::FREE && m_grid->GetCell(dirLine, dirColumn)->s_added == false)
+			{
+				// Ajouter le voisin à la file
+				cellQueue.push(m_grid->GetCell(dirLine, dirColumn));
+				// Marquer le voisin comme "ajouté"
+				m_grid->GetCell(dirLine, dirColumn)->s_added = true;
+			}
+		}
+	}
+
+	return false; // chemin non trouvé
+}
+
