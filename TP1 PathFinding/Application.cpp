@@ -161,15 +161,6 @@ void Application::Update()
 		m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
 	}
 
-	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
-	{
-		ResetPath();
-
-		FindPath(m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()), m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn()));
-
-	
-	}
-
 	for (Entity* kayou : m_kayoux)
 	{
 		int posLineKaoyu = kayou->GetPosLine();
@@ -181,6 +172,14 @@ void Application::Update()
 		}
 	}
 
+	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
+	{
+		ResetPath();
+
+		FindPath(m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()), m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn()));
+
+	
+	}
 }
 
 void Application::Draw()
@@ -302,7 +301,19 @@ bool Application::FindPath(Cell* p_start, Cell* p_end)
 			Cell* neighbor = m_grid->GetCell(line, col);
 			if (neighbor == nullptr)
 				continue;
-
+			/*
+			* Explication du filtre d'obstacle :
+			*
+			* Face à un rocher (KAYOU) :
+			* 1. Est-ce qu'il est différent du vide ? Oui.
+			* 2. Est-ce qu'il est différent du curseur ? Oui.
+			* 3. Conclusion : Oui ET Oui. L'ordinateur exécute le continue et ignore le rocher. Le mur bloque bien le chemin.
+			*
+			* Face à une case vide (FREE) :
+			* 1. Est-ce qu'elle est différente du vide ? Non (puisque c'est du vide).
+			* 2. L'ordinateur s'arrête de lire. Puisque la première partie est fausse, le && (ET) fait que la condition entière est fausse.
+			* 3. Conclusion : Le continue n'est pas exécuté. La case vide est acceptée pour construire le chemin.
+			*/
 			if (neighbor->s_elementIn != (int)Element::FREE && neighbor->s_elementIn != (int)Element::CURSOR)
 				continue;
 
