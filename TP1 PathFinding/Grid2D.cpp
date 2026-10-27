@@ -27,7 +27,9 @@ bool Grid2D::Init(int p_line, int p_column)
 		m_grid[line].resize(p_column);
 		for (int column = 0; column < p_column; column++)
 		{
-			m_grid[line][column] = Cell(line, column);
+			Cell cell;
+			cell.SetLineColumn(line, column);
+			m_grid[line][column] = cell;
 		}
 	}
 
@@ -50,11 +52,11 @@ bool Grid2D::Init(int p_line, int p_column)
 
 Cell* Grid2D::GetCell(int p_line, int p_column)
 {
-	//assert(p_line >= 0 && p_line < m_line, "Line index out of bounds");
-	//assert(p_column >= 0 && p_column < m_column, "Column index out of bounds");
+	if (p_line < 0 || p_line >= m_line)
+		return nullptr;
 
-	p_line = std::clamp(p_line, 0, m_line - 1);
-	p_column = std::clamp(p_column, 0, m_column - 1);
+	if (p_column < 0 || p_column >= m_column)
+		return nullptr;
 
 	return &m_grid[p_line][p_column];
 }

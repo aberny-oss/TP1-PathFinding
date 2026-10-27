@@ -34,8 +34,11 @@ void Application::Init()
 {
 	hidecursor();
 
+	srand(time(NULL));
+
 	m_grid = new Grid2D();
 	m_grid->Init(GRID_LINE, GRID_COLUMN);
+
 
 	m_cursor = new Entity();
 	m_cursor->Init(GRID_LINE, GRID_COLUMN);
@@ -48,16 +51,24 @@ void Application::Init()
 	//m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);
 	//m_grid->SetCell(m_player->GetPosLine(), m_player->GetPosColumn(), PLAYER);
 	m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn())->s_elementIn = (int)Element::CURSOR;
-	m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
+	m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
 
 	int spawnKayouLine = 0;
 	int spawnKayouColumn = 0;
-	for (int i = 0; i < 1; i++)
+
+	int nbKayou = 6;
+	m_kayoux.reserve(nbKayou);
+
+	for (int i = 0; i < nbKayou; i++)
 	{
+		Entity* kayou = new Entity();
+		kayou->Init(GRID_LINE, GRID_COLUMN);
 		spawnKayouLine = rand() % GRID_LINE;
 		spawnKayouColumn = rand() % GRID_COLUMN;
+		kayou->SetPosition(spawnKayouLine, spawnKayouColumn);
 		//if (m_grid->GetCell(spawnKayouLine, spawnKayouColumn) == VOID)
 		//	m_grid->SetCell(spawnKayouLine, spawnKayouColumn, KAYOU);
+		m_kayoux.push_back(kayou);
 		if (m_grid->GetCell(spawnKayouLine, spawnKayouColumn)->s_elementIn == (int)Element::FREE)
 			m_grid->GetCell(spawnKayouLine, spawnKayouColumn)->s_elementIn = (int)Element::KAYOU;
 	}
@@ -94,22 +105,22 @@ void Application::HandleInput()
 	{
 		return;
 	}
-	case 111: // O
+	case 'o': // O
 	{
 		m_cursor->UpdatePosition(-1, 0);
 		break;
 	}
-	case 108: // S
+	case 'l': // L
 	{
 		m_cursor->UpdatePosition(1, 0);
 		break;
 	}
-	case 107: // K
+	case 'k': // K
 	{
 		m_cursor->UpdatePosition(0, -1);
 		break;
 	}
-	case 109: // M
+	case 'm': // M
 	{
 		m_cursor->UpdatePosition(0, 1);
 		break;
@@ -148,6 +159,48 @@ void Application::Update()
 	if (m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn != (int)Element::CURSOR)
 	{
 		m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn())->s_elementIn = (int)Element::PLAYER;
+	}
+
+	if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
+	{
+		//ResetPath();
+
+		FindPath(m_grid->GetCell(m_player->GetPosLine(), m_player->GetPosColumn()), m_grid->GetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn()));
+
+		//int diffRow = m_cursor->GetPosLine() - m_player->GetPosLine();
+		//int lenghtRow = std::abs(diffRow);
+		//if (lenghtRow != 0)
+		//{
+		//	int dirRow = diffRow / lenghtRow;
+		//	for (int row = 0; row < lenghtRow; row++)
+		//	{
+		//		isInPath[m_player->GetPosLine() + dirRow * row][m_player->GetPosColumn()] = true;
+		//		m_grid->GetCell(m_player->GetPosLine() + dirRow * row, m_player->GetPosColumn())->s_elementIn = (int)Element::PATH;
+		//	}
+		//}
+
+		//int diffCol = m_cursor->GetPosColumn() - m_player->GetPosColumn();
+		//int lenghtCol = std::abs(diffCol);
+		//if (lenghtCol != 0)
+		//{
+		//	int dirCol = diffCol / lenghtCol;
+		//	for (int col = 0; col < lenghtCol; col++)
+		//	{
+		//		isInPath[m_player->GetPosLine() + diffRow][m_player->GetPosColumn() + dirCol * col] = true;
+		//		m_grid->GetCell(m_player->GetPosLine() + diffRow, m_player->GetPosColumn() + dirCol * col)->s_elementIn = (int)Element::PATH;
+		//	}
+		//}
+	}
+
+	for (Entity* kayou : m_kayoux)
+	{
+		int posLineKaoyu = kayou->GetPosLine();
+		int posColumnKaoyu = kayou->GetPosColumn();
+
+		if (m_grid->GetCell(posLineKaoyu, posColumnKaoyu)->s_elementIn != (int)Element::CURSOR)
+		{
+			m_grid->GetCell(posLineKaoyu, posColumnKaoyu)->s_elementIn = (int)Element::KAYOU;
+		}
 	}
 
 	//if ((m_player->GetPosLine() != m_cursor->GetPosLine()) || (m_player->GetPosColumn() != m_cursor->GetPosColumn()))
@@ -295,6 +348,16 @@ void Application::Refresh()
 
 bool Application::FindPath(Cell* p_start, Cell* p_end)
 {
+	//
+	for (int line = 0; line < m_grid->GetLine(); line++)
+	{
+		for (int column = 0; column < m_grid->GetColumn(); column++)
+		{
+			Cell* cell = m_grid->GetCell(line, column);
+			cell->s_added = false;
+		}
+	}
+
 	// Créer une file
 	std::queue<Cell*> cellQueue;
 
@@ -307,32 +370,59 @@ bool Application::FindPath(Cell* p_start, Cell* p_end)
 	/* la file n'est pas vide */
 	while (cellQueue.empty() == false)
 	{
+		Cell* current = cellQueue.front();
 		// Récupérer la tile en tête de file et la retirer de la file
 		cellQueue.pop();
 
 		/* la tile a les coordonnées de end */
-		if (p_end == cellQueue.front())
+		if (p_end == current)
+		{
+			Cell* cell = current;
+			while (cell != nullptr)
+			{
+				//isInPath[cell->s_line][cell->s_column] = true;
+				cell->s_elementIn = (int)Element::PATH;
+				cell = cell->s_cameFrom;
+			}
+
 			return true; // chemin trouvé
+		}
 
 		const int directions[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, };
 
 		/* chaque voisin de la tile courante */
 		for (int i = 0; i < 4; i++) 
 		{
-			int dirLine = directions[i][0];
-			int dirColumn = directions[i][1];
+			int line = current->s_line + directions[i][0];
+			int col = current->s_column + directions[i][1];
 
-			/* voisin sans obstacle et non "ajouté" */
-			if (m_grid->GetCell(dirLine, dirColumn)->s_elementIn == (int)Element::FREE && m_grid->GetCell(dirLine, dirColumn)->s_added == false)
-			{
-				// Ajouter le voisin à la file
-				cellQueue.push(m_grid->GetCell(dirLine, dirColumn));
-				// Marquer le voisin comme "ajouté"
-				m_grid->GetCell(dirLine, dirColumn)->s_added = true;
-			}
+			Cell* neighbor = m_grid->GetCell(line, col);
+			if (neighbor == nullptr)
+				continue;
+
+			if (neighbor->s_elementIn != (int)Element::FREE && neighbor->s_elementIn != (int)Element::CURSOR)
+				continue;
+
+			if (neighbor->s_added)
+				continue;
+
+			neighbor->s_cameFrom = current;
+			neighbor->s_added = true;
+			cellQueue.push(neighbor);
 		}
 	}
 
 	return false; // chemin non trouvé
+}
+
+void Application::ResetPath()
+{
+	for (int row = 0; row < ROWS; row++)
+	{
+		for (int col = 0; col < COLS; col++)
+		{
+			isInPath[row][col] = false;
+		}
+	}
 }
 

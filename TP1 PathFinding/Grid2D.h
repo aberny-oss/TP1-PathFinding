@@ -20,17 +20,16 @@ struct Cell
 	bool s_added;
 	Cell* s_cameFrom;
 
-	Cell(int p_line, int p_column)
+	Cell()
 	{
-		s_line = p_line;
-		s_column = p_column;
-		//s_line = -1;
-		//s_column = -1;
+		s_line = -1;
+		s_column = -1;
 		s_obstacle = false;
 		s_elementIn = (int)Element::FREE;
 		s_added = false;
 		s_cameFrom = nullptr;
 	}
+	void SetLineColumn(int p_line, int p_column) { s_line = p_line; s_column = p_column; }
 };
 
 class Grid2D

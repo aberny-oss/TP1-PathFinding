@@ -1,8 +1,13 @@
 #pragma once
+#include <vector>
 
 class Grid2D;
 class Entity;
 struct Cell;
+
+
+constexpr int ROWS = 10;
+constexpr int COLS = 10;
 
 class Application
 {
@@ -30,6 +35,8 @@ public:
 
 	bool FindPath(Cell* p_start, Cell* p_end);
 
+	void ResetPath();
+
 private:
 
 	bool m_running;
@@ -42,5 +49,9 @@ private:
 	Entity* m_cursor;
 	Entity* m_player;
 
+	std::vector<Entity*> m_kayoux;
+
+
+	bool isInPath[ROWS][COLS];
 };
 

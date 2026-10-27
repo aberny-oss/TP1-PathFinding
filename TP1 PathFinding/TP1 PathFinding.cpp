@@ -16,8 +16,8 @@ int main()
 
 #define ENTER 13
 
-constexpr int ROWS = 10;
-constexpr int COLS = 10;
+//constexpr int ROWS = 10;
+//constexpr int COLS = 10;
 
 void gotoxy(short x, short y)
 {
