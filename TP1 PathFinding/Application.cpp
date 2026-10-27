@@ -21,9 +21,11 @@ void Application::Init()
 	m_grid->Init(GRID_LINE, GRID_COLUMN);
 
 	m_cursor = new Entity();
+	m_cursor->Init(GRID_LINE, GRID_COLUMN);
 	m_cursor->SetPosition(GRID_LINE - 1, GRID_COLUMN - 1);
 
 	m_player = new Entity();
+	m_player->Init(GRID_LINE, GRID_COLUMN);
 	m_player->SetPosition(0, 0);
 
 	m_grid->SetCell(m_cursor->GetPosLine(), m_cursor->GetPosColumn(), CURSOR);

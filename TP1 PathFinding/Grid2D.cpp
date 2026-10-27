@@ -27,16 +27,22 @@ bool Grid2D::Init(int p_line, int p_column)
 
 void Grid2D::SetCell(int p_line, int p_column, int p_value)
 {
-	assert(p_line >= 0 && p_line < m_line, "Line index out of bounds");
-	assert(p_column >= 0 && p_column < m_column, "Column index out of bounds");
+	//assert(p_line >= 0 && p_line < m_line, "Line index out of bounds");
+	//assert(p_column >= 0 && p_column < m_column, "Column index out of bounds");
+
+	p_line = std::clamp(p_line, 0, m_line - 1);
+	p_column = std::clamp(p_column, 0, m_column - 1);
 
 	m_grid[p_line][p_column] = p_value;
 }
 
 int Grid2D::GetCell(int p_line, int p_column) const
 {
-	assert(p_line >= 0 && p_line < m_line, "Line index out of bounds");
-	assert(p_column >= 0 && p_column < m_column, "Column index out of bounds");
+	//assert(p_line >= 0 && p_line < m_line, "Line index out of bounds");
+	//assert(p_column >= 0 && p_column < m_column, "Column index out of bounds");
+
+	p_line = std::clamp(p_line, 0, m_line - 1);
+	p_column = std::clamp(p_column, 0, m_column - 1);
 
 	return m_grid[p_line][p_column];
 }
