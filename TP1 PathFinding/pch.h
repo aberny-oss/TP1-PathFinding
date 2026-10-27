@@ -1,6 +1,8 @@
 #ifndef PCH_H
 #define PCH_H
 
+#define NOMINMAX
+#include <windows.h>
 #include <iostream>
 #include <cstdlib>
 #include <conio.h>

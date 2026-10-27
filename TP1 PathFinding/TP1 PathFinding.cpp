@@ -1,9 +1,4 @@
-//#include "pch.h"
-#include <iostream>
-#include <conio.h>
-
-#define NOMINMAX
-#include <windows.h>
+#include "pch.h"
 
 #define BG_RED "\033[41m"
 #define BG_GREEN "\033[42m"
