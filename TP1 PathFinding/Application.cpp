@@ -55,8 +55,6 @@ void Application::Run()
 		Update();
 
 		Draw();
-
-		Refresh();
 	}
 }
 
@@ -196,8 +194,7 @@ void Application::Update()
 
 void Application::Draw()
 {
-	std::system("cls");
-
+	Refresh();
 	if (m_drawInput == true)
 	{
 		char userInputChar = Input::GetInstance()->GetInputChar();
