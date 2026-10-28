@@ -20,6 +20,8 @@ struct Cell
 	bool s_added;
 	Cell* s_cameFrom;
 
+	int s_difficulty;
+
 	Cell()
 	{
 		s_line = -1;
@@ -28,6 +30,7 @@ struct Cell
 		s_elementIn = (int)Element::FREE;
 		s_added = false;
 		s_cameFrom = nullptr;
+		s_difficulty = 1 + (rand() % CELL_DIFFICULTY_MAX);
 	}
 	void SetLineColumn(int p_line, int p_column) { s_line = p_line; s_column = p_column; }
 };

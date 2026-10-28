@@ -39,5 +39,8 @@
 #define GRID_LINE	10
 #define GRID_COLUMN	10
 
+//CELL
+#define CELL_DIFFICULTY_MAX	3
+
 
 #endif
