@@ -56,7 +56,7 @@ void Application::Init()
 	int spawnKayouLine = 0;
 	int spawnKayouColumn = 0;
 
-	int nbKayou = 6;
+	int nbKayou = 25;
 	m_kayoux.reserve(nbKayou);
 
 	for (int i = 0; i < nbKayou; i++)
