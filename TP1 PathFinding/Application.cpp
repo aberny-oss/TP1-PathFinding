@@ -290,7 +290,7 @@ bool Application::FindPath(Cell* p_start, Cell* p_end)
 			return true; // chemin trouvé
 		}
 
-		const int directions[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, };
+		constexpr int directions[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, };
 
 		/* chaque voisin de la tile courante */
 		for (int i = 0; i < 4; i++) 
